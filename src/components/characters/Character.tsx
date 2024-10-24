@@ -1,11 +1,15 @@
 import Image from "next/image";
 import { followCharacter } from "@/mutations/follow";
+import { unfollowCharacter } from "@/mutations/unfollow";
+import { useRouter } from "next/router";
+
 const _NOOP = () => {};
 
-export const Character = ({ character, onFollow = _NOOP }) => {
+export const Character = ({ character, onFollow = _NOOP, isFollowed }) => {
   const { image, name, status, location, gender, species, type, origin, id } =
     character;
-
+  const router = useRouter();
+  console.log("inCharacter , isFollowed:", isFollowed);
   return (
     <div className="p-4 h-full w-full flex flex-row flex-wrap gap-4 justify-center">
       <Image
@@ -40,12 +44,22 @@ export const Character = ({ character, onFollow = _NOOP }) => {
         </div>
         <span>
           <button
-            onClick={() => {
-              followCharacter({ id: id });
-            }}
+            onClick={
+              isFollowed
+                ? () => {
+                    console.log("unfolllowing");
+                    unfollowCharacter({ id: id });
+                    router.reload();
+                  }
+                : () => {
+                    console.log("folllowing");
+                    followCharacter({ id: id });
+                    router.reload();
+                  }
+            }
             className="flex px-1 follow-btn"
           >
-            Follow
+            {isFollowed ? "Unfollow" : "Follow"}
           </button>
         </span>
       </div>
